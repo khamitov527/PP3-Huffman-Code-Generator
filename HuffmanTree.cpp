@@ -3,6 +3,7 @@
 
 std::string HuffmanTree::compress(const std::string inputStr)
 {
+    std::map<char, int> freqList;
 
     for(int i = 0; i < inputStr.size(); i++){
         freqList[inputStr[i]]++;
@@ -24,22 +25,24 @@ std::string HuffmanTree::compress(const std::string inputStr)
         hq.insert(hnP);
     }
 
-    preorder(hq.min(), str, prefixList);
+    str = "";
+
+    preorder(hq.min(), str);
     
     return str;
 }
 
 
-void preorder(HuffmanNode *root, std::string s, std::map<char, std::string> prefList){
+void preorder(HuffmanNode *root, std::string s){
     
     if(root == nullptr)
         return;
 
     if(root->isLeaf()){
-        prefList[root->getCharacter()] = s;
+        HuffmanTree::prefixList[root->getCharacter()] = s;
     }
-    preorder(root, s.append("0"), prefList);
-    preorder(root, s.append("1"), prefList);
+    preorder(root, s.append("0"));
+    preorder(root, s.append("1"));
 }
 
 
@@ -53,9 +56,9 @@ std::string HuffmanTree::decompress(const std::string inputCode, const std::stri
     return " ";
 }
 
-int main(){
+// int main(){
 
-    HuffmanTree huf;
-    std::string outputStr = huf.compress("abcd");
+//     HuffmanTree huf;
+//     std::string outputStr = huf.compress("abcd");
     
-}
+// }
