@@ -3,10 +3,6 @@
 
 std::string HuffmanTree::compress(const std::string inputStr)
 {
-    std::map<char, int> freqList;
-    std::map<char, std::string> prefixList;
-    HeapQueue<HuffmanNode*, HuffmanNode::Compare> hq;
-    VectorCompleteTree<HuffmanNode*> vt;
 
     for(int i = 0; i < inputStr.size(); i++){
         freqList[inputStr[i]]++;
@@ -26,54 +22,40 @@ std::string HuffmanTree::compress(const std::string inputStr)
         hq.removeMin();
         HuffmanNode *hnP = new HuffmanNode(' ', hnL->getFrequency() + hnR->getFrequency(), nullptr, hnL, hnR);
         hq.insert(hnP);
-
-        hnL->parent = hnP;
-        hnR->parent = hnP;
-
-        vt.addLast(hnL);
-        vt.addLast(hnR);
     }
-    vt.addLast(hq.min());
-    hq.removeMin();
+
+    preorder(hq.min(), str, prefixList);
     
-    for (auto iter = vt.root(); iter == vt.last(); ++iter){
-        
-    }
-    
-
-
-    // std::vector< std::pair<int, char> > vec;
-
-    // HeapQueue<int, char> hq;
-
-    // for(int i = 0; i < vec.size(); i++){
-    //     hq.insert(vec[i].first);
-    // }  
-
+    return str;
 }
+
+
+void preorder(HuffmanNode *root, std::string s, std::map<char, std::string> prefList){
+    
+    if(root == nullptr)
+        return;
+
+    if(root->isLeaf()){
+        prefList[root->getCharacter()] = s;
+    }
+    preorder(root, s.append("0"), prefList);
+    preorder(root, s.append("1"), prefList);
+}
+
 
 std::string HuffmanTree::serializeTree()
 {
+    return " ";
 }
 
 std::string HuffmanTree::decompress(const std::string inputCode, const std::string serializedTree)
 {
+    return " ";
 }
 
-// int main(){
+int main(){
 
-//     std::string inputStr = "aaaaaa";
-
-//     std::map<char, int> freqList;	
-
-//     for(int i = 0; i < inputStr.size(); i++){
-//         freqList[inputStr[i]]++;
-//     }
-
-//     HeapQueue<char, int> hq;
-
-//     for(int i = 0; i < inputStr.size(); i++){
-//         hq.insert(freqList[i]);
-//     }
-//     return 0;
-// }
+    HuffmanTree huf;
+    std::string outputStr = huf.compress("abcd");
+    
+}
