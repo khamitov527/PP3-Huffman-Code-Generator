@@ -1,25 +1,23 @@
 #ifndef HUFFMANTREE_H
 #define HUFFMANTREE_H
 
-#include "HuffmanBase.hpp"
+#include "HuffmanBase.cpp"
 #include "HeapQueue.hpp"
 #include <map>
 #include <vector>
 
 
 class HuffmanTree : public HuffmanTreeBase {
-  HuffmanTree();
-  ~ HuffmanTree();
   public:
+  HuffmanTree();
+  ~HuffmanTree();
   std::string compress(const std::string inputStr);
-  std::string serializeTree();
+  std::string serializeTree() const;
   std::string decompress(const std::string inputCode, const std::string serializedTree);
-  void preorder(HuffmanNode *root, std::string s);
+  void preorder(HuffmanNode *node, std::map<char, std::string> *map, std::string s);
 
   private:
-  std::map<char, std::string> prefixList;
   HeapQueue<HuffmanNode*, HuffmanNode::Compare> hq;
-  std::string str;
 };
 
 #endif /* HUFFMANBASE_H */
