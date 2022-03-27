@@ -1,9 +1,19 @@
 #include "HuffmanTree.hpp"
 
+HuffmanTree::HuffmanTree() {
+
+};
+  
+HuffmanTree::~HuffmanTree() {
+
+};
+
 
 std::string HuffmanTree::compress(const std::string inputStr)
 {
     std::map<char, int> freqList;
+    std::map<char, std::string> *prefixList = new std::map<char, std::string>;
+    std::string output;
 
     for(int i = 0; i < inputStr.size(); i++){
         freqList[inputStr[i]]++;
@@ -21,32 +31,39 @@ std::string HuffmanTree::compress(const std::string inputStr)
         hq.removeMin();
         HuffmanNode *hnR = hq.min();
         hq.removeMin();
-        HuffmanNode *hnP = new HuffmanNode(' ', hnL->getFrequency() + hnR->getFrequency(), nullptr, hnL, hnR);
+        HuffmanNode *hnP = new HuffmanNode('\0', (hnL->getFrequency() + hnR->getFrequency()), nullptr, hnL, hnR);
+        hnL->parent = hnP;
+        hnR->parent = hnP;
         hq.insert(hnP);
     }
 
-    str = "";
+    std::string str = "";
+    preorder(hq.min(), prefixList, str);
 
-    preorder(hq.min(), str);
+    for(int i = 0; i < inputStr.size(); i++) {
+        output.append((*prefixList)[inputStr[i]]);
+    }
     
-    return str;
+    return output;
 }
 
 
-void preorder(HuffmanNode *root, std::string s){
-    
-    if(root == nullptr)
+void HuffmanTree::preorder(HuffmanNode *node, std::map<char, std::string> *map, std::string s) {   
+    if(node == nullptr)
         return;
 
-    if(root->isLeaf()){
-        HuffmanTree::prefixList[root->getCharacter()] = s;
+    std::cout << node->getCharacter() << ": " << node->getFrequency() << " - " << s << std::endl;
+
+    if(node->isLeaf()){
+        (*map)[node->getCharacter()] = s;
     }
-    preorder(root, s.append("0"));
-    preorder(root, s.append("1"));
+    preorder(node->left, map, s.append("0"));
+    s.pop_back();
+    preorder(node->right, map, s.append("1"));
 }
 
 
-std::string HuffmanTree::serializeTree()
+std::string HuffmanTree::serializeTree() const
 {
     return " ";
 }
@@ -55,10 +72,3 @@ std::string HuffmanTree::decompress(const std::string inputCode, const std::stri
 {
     return " ";
 }
-
-// int main(){
-
-//     HuffmanTree huf;
-//     std::string outputStr = huf.compress("abcd");
-    
-// }
