@@ -13,7 +13,7 @@ std::string HuffmanTree::compress(const std::string inputStr)
 {
     std::map<char, int> freqList;
     std::map<char, std::string> *prefixList = new std::map<char, std::string>;
-    std::string output;
+    std::string output = "";
 
     for(int i = 0; i < inputStr.size(); i++){
         freqList[inputStr[i]]++;
@@ -34,11 +34,17 @@ std::string HuffmanTree::compress(const std::string inputStr)
         HuffmanNode *hnP = new HuffmanNode('\0', (hnL->getFrequency() + hnR->getFrequency()), nullptr, hnL, hnR);
         hnL->parent = hnP;
         hnR->parent = hnP;
+
+        std::cout << hnP->left->getCharacter() << ": " << hnP->left->getFrequency() << std::endl;
+        std::cout << hnP->right->getCharacter() << ": " << hnP->right->getFrequency() << std::endl;
+
         hq.insert(hnP);
     }
 
+    root = hq.min();
+
     std::string str = "";
-    preorder(hq.min(), prefixList, str);
+    preorder(root, prefixList, str);
 
     for(int i = 0; i < inputStr.size(); i++) {
         output.append((*prefixList)[inputStr[i]]);
@@ -52,8 +58,6 @@ void HuffmanTree::preorder(HuffmanNode *node, std::map<char, std::string> *map, 
     if(node == nullptr)
         return;
 
-    std::cout << node->getCharacter() << ": " << node->getFrequency() << " - " << s << std::endl;
-
     if(node->isLeaf()){
         (*map)[node->getCharacter()] = s;
     }
@@ -62,13 +66,70 @@ void HuffmanTree::preorder(HuffmanNode *node, std::map<char, std::string> *map, 
     preorder(node->right, map, s.append("1"));
 }
 
-
 std::string HuffmanTree::serializeTree() const
 {
-    return " ";
+    std::string output = "";
+
+    if (root == nullptr) {
+        return output;
+    }
+
+    serialize(root, output);
+    
+    return output;
+}
+
+void HuffmanTree::serialize(HuffmanNode *node, std::string &s) const {   
+    if(node == nullptr)
+        return;
+
+    serialize(node->left, s);
+    serialize(node->right, s);
+
+    if (node->isBranch()) {
+        s.append("B");
+    } else if (node->isLeaf()) {
+        std::string temp = "L";
+        temp += node->getCharacter();
+        s.append(temp);
+    }
 }
 
 std::string HuffmanTree::decompress(const std::string inputCode, const std::string serializedTree)
 {
+    std::stack<HuffmanNode*> deserializeTree;
+    HuffmanNode *treeRoot;
+    HuffmanNode *node;
+    
+    for (int i = 0; i < serializedTree.size(); i++) {
+        if (serializedTree[i] == 'L') {
+            continue;
+        } else if (serializedTree[i] == 'B') {
+            HuffmanNode *hnR = deserializeTree.top();
+            deserializeTree.pop();
+            HuffmanNode *hnL = deserializeTree.top();
+            deserializeTree.pop();
+            HuffmanNode *hnP = new HuffmanNode('\0', 0, nullptr, hnL, hnR);
+            hnL->parent = hnP;
+            hnR->parent = hnP;
+            deserializeTree.push(hnP);
+
+            if (deserializeTree.size() == 1) {
+                treeRoot = hnP;
+            }
+        } else {
+            deserializeTree.push(new HuffmanNode(serializedTree[i], 0));
+        }
+    }
+
+    node = treeRoot;
+    for (int i = 0; i < inputCode.size(); i++) {
+        if (inputCode[i] == '0') {
+            node->left;
+        } else if (inputCode[i] == '1') {
+            node->right;
+        }
+    }
+    
     return " ";
 }
