@@ -1,7 +1,7 @@
 #ifndef HUFFMANTREE_H
 #define HUFFMANTREE_H
 
-#include "HuffmanBase.cpp"
+#include "HuffmanBase.hpp"
 #include "HeapQueue.hpp"
 #include <map>
 #include <vector>
