@@ -25,16 +25,21 @@ std::string HuffmanTree::compress(const std::string inputStr)
             freqList[inputStr[i]] = 0;
         }
     }
-
+    
+    char pChar = '\0';
     while(hq.size() > 1){
         HuffmanNode *hnL = hq.min();
         hq.removeMin();
+      
         HuffmanNode *hnR = hq.min();
         hq.removeMin();
-        HuffmanNode *hnP = new HuffmanNode('\0', (hnL->getFrequency() + hnR->getFrequency()), nullptr, hnL, hnR);
+      
+        HuffmanNode *hnP = new HuffmanNode(pChar, (hnL->getFrequency() + hnR->getFrequency()), nullptr, hnL, hnR);
         hnL->parent = hnP;
         hnR->parent = hnP;
         hq.insert(hnP);
+      
+        pChar++;
     }
 
     root = hq.min();
