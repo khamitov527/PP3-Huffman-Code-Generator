@@ -19,14 +19,18 @@ std::string HuffmanTree::compress(const std::string inputStr)
         freqList[inputStr[i]]++;
     }
 
-    for(int i = 0; i < inputStr.size(); i++){
-        if(freqList[inputStr[i]] != 0){
-            hq.insert(new HuffmanNode(inputStr[i], freqList[inputStr[i]]));
-            freqList[inputStr[i]] = 0;
-        }
+    // for(int i = 0; i < inputStr.size(); i++){
+    //     if(freqList[inputStr[i]] != 0){
+    //         hq.insert(new HuffmanNode(inputStr[i], freqList[inputStr[i]]));
+    //         freqList[inputStr[i]] = 0;
+    //     }
+    // }
+    for(std::map<char, int>::iterator iter = freqList.begin(); iter != freqList.end(); iter++){
+        HuffmanNode *temp = new HuffmanNode(iter->first, iter->second);
+        hq.insert(temp);
     }
     
-    char pChar = '\0';
+  
     while(hq.size() > 1){
         HuffmanNode *hnL = hq.min();
         hq.removeMin();
@@ -34,17 +38,17 @@ std::string HuffmanTree::compress(const std::string inputStr)
         HuffmanNode *hnR = hq.min();
         hq.removeMin();
       
-        HuffmanNode *hnP = new HuffmanNode(pChar, (hnL->getFrequency() + hnR->getFrequency()), nullptr, hnL, hnR);
+        HuffmanNode *hnP = new HuffmanNode(0, (hnL->getFrequency() + hnR->getFrequency()), nullptr, hnL, hnR);
         hnL->parent = hnP;
         hnR->parent = hnP;
         hq.insert(hnP);
-      
-        pChar++;
+
     }
 
     root = hq.min();
 
     std::string str = "";
+
     preorder(root, prefixList, str);
 
     for(int i = 0; i < inputStr.size(); i++) {
@@ -99,7 +103,7 @@ void HuffmanTree::serialize(HuffmanNode *node, std::string &s) const {
 std::string HuffmanTree::decompress(const std::string inputCode, const std::string serializedTree)
 {
     std::string output = "";
-    std::stack<HuffmanNode*> deserializeTree;
+    std::stack<HuffmanNode*> deserializeTree = std::stack<HuffmanNode*>();
     HuffmanNode *treeRoot;
     HuffmanNode *node;
     
@@ -111,12 +115,12 @@ std::string HuffmanTree::decompress(const std::string inputCode, const std::stri
             deserializeTree.pop();
             HuffmanNode *hnL = deserializeTree.top();
             deserializeTree.pop();
-            HuffmanNode *hnP = new HuffmanNode('\0', 0, nullptr, hnL, hnR);
+            HuffmanNode *hnP = new HuffmanNode(0, 0, nullptr, hnL, hnR);
             hnL->parent = hnP;
             hnR->parent = hnP;
             deserializeTree.push(hnP);
 
-            if (deserializeTree.size() == 1) {
+            if (deserializeTree.size() <= 1) {
                 treeRoot = hnP;
             }
         } else {
@@ -125,6 +129,7 @@ std::string HuffmanTree::decompress(const std::string inputCode, const std::stri
     }
 
     node = treeRoot;
+
     for (int i = 0; i < inputCode.size(); i++) {
         if (inputCode[i] == '0') {
             node = node->left;
